@@ -1,1 +1,1 @@
-A node js template with typescript, eslint.
+Chat App backend
