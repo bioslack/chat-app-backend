@@ -55,7 +55,6 @@ export const logout = catchAsync(
 
 export const refresh = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    console.log(req.cookies);
     const cookies = req.cookies;
     if (!cookies?.jwt) throw new HttpError(401, "Invalid token");
 
