@@ -17,6 +17,14 @@ class UserConnection {
   }
 }
 
+interface Message {
+  _id: string;
+  text: string;
+  receiver: string;
+  sender: string;
+  createdAt: number;
+}
+
 class UsersPool {
   pool: UserConnection[];
 
@@ -48,6 +56,12 @@ class UsersPool {
         )
       );
   }
+
+  send(message: Message) {
+    const found = this.pool.find((u) => u._id === message.receiver);
+    if (!found) return;
+    found.socket.emit("receive-message", message);
+  }
 }
 
 const users = new UsersPool();
@@ -55,6 +69,10 @@ const users = new UsersPool();
 io.on("connection", (socket) => {
   socket.on("user-connected", (id: string) => {
     users.add(id, socket);
+  });
+
+  socket.on("send-message", (message) => {
+    users.send(message);
   });
 
   socket.on("disconnect", () => {
