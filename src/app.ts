@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import http from "http";
 import cookieParser from "cookie-parser";
 import { corsOptions } from "./config";
 import credentials from "./middlewares/credential";
@@ -10,6 +11,7 @@ import chatRouter from "./routes/chat";
 import { error, notFound } from "./middlewares/errors";
 
 const app = express();
+const server = http.createServer(app);
 
 app.use(express.static(`${__dirname}/../public`));
 app.use(express.json());
@@ -27,4 +29,4 @@ app.use("/chat-app/v1", chatRouter);
 app.use("*", notFound); // Handling unknown routes
 app.use(error); // Error handling
 
-export default app;
+export default server;

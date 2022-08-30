@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import app from "./app";
 import "./database";
+import "./socket";
 
 config({
   path: ".env",
