@@ -1,3 +1,4 @@
+import Message from "../models/Message";
 import { Server, Socket } from "socket.io";
 import app from "../app";
 
@@ -18,7 +19,7 @@ class UserConnection {
 }
 
 interface Message {
-  _id: string;
+  _id?: string;
   text: string;
   receiver: string;
   sender: string;
@@ -61,6 +62,8 @@ class UsersPool {
     const found = this.pool.find((u) => u._id === message.receiver);
     if (!found) return;
     found.socket.emit("receive-message", message);
+    delete message._id;
+    Message.create(message)
   }
 }
 
