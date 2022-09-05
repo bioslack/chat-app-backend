@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { HttpError } from "../utils";
+import { HttpError, decodeToken } from "../utils";
 
 const restricted = (req: Request, _res: Response, next: NextFunction) => {
   const authorization = req.get("authorization");
@@ -11,6 +11,9 @@ const restricted = (req: Request, _res: Response, next: NextFunction) => {
   if (!process.env.ACCESS_TOKEN_SECRET) throw new HttpError(500);
   if (!jwt.verify(token, process.env.ACCESS_TOKEN_SECRET))
     throw new HttpError(401, "Authentication token has expired");
+
+  const { _id: id } = decodeToken(token);
+  req.id = id;
 
   next();
 };
