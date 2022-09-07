@@ -3,6 +3,7 @@ import { config } from "dotenv";
 import jwt from "jsonwebtoken";
 import User, { IUser } from "../models/User";
 import { Types } from "mongoose";
+import { createHash } from "crypto";
 
 config({
   path: ".env",
@@ -172,3 +173,10 @@ interface DecodedUser {
 export const decodeToken = (token: string) => {
   return jwt.decode(token) as DecodedUser;
 };
+
+export const generateFileName = () => {
+  const md5 = createHash("md5");
+  md5.update(`${Date.now()}`);
+  const buffer = md5.digest();
+  return buffer.toString("hex");
+}
