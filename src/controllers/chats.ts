@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import multer, { FileFilterCallback } from "multer";
 import { fileURLToPath } from "url";
-import Chat from "../models/Chat";
+import Chat, { IChat } from "../models/Chat";
 import Message from "../models/Message";
 import { catchAsync, generateFileName, HttpError } from "../utils";
 
@@ -57,14 +57,19 @@ export const upload = multer({
   },
 });
 
-export const imageUploader = catchAsync(
+export const updateUser = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
+    const chatData: Partial<IChat> = {
+      name: req.body.name,
+    };
+
+    if (req.filename) chatData.picture = req.filename;
+
     const chat = await Chat.findByIdAndUpdate(
       req.id,
-      { $set: { picture: req.filename } },
+      { $set: chatData },
       { new: true, runValidators: true }
     );
-    console.log(req.filename);
     res.status(200).send("Uploaded");
   }
 );

@@ -17,3 +17,10 @@ export const getUsers = catchAsync(
     });
   }
 );
+
+export const getUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const user = await User.findOne( { _id: req.id });
+    res.status(200).send({ user });
+  }
+);
