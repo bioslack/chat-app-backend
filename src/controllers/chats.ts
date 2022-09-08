@@ -81,8 +81,21 @@ export const updateUser = catchAsync(
   }
 );
 
-interface SendMessageResponseBody {
-  receiver: string;
-  text: string;
-  createdAt: number;
-}
+export const removePicture = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const chat = await Chat.findOne({ _id: req.id });
+
+    if (!chat) throw new HttpError(400);
+
+    if (chat.picture !== "default.png") {
+      deleteFile(chat.picture);
+      await Chat.findByIdAndUpdate(
+        req.id,
+        { $set: { picture: "default.png" } },
+        { new: true, runValidators: true }
+      );
+    }
+
+    return res.status(201).send();
+  }
+);
