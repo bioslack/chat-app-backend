@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { config } from "dotenv";
 import jwt from "jsonwebtoken";
+import { unlink } from "fs/promises";
 import User, { IUser } from "../models/User";
 import { Types } from "mongoose";
 import { createHash } from "crypto";
@@ -179,4 +180,11 @@ export const generateFileName = () => {
   md5.update(`${Date.now()}`);
   const buffer = md5.digest();
   return buffer.toString("hex");
+}
+
+export const deleteFile = async (filename: string) => {
+  try {
+  }catch {
+
+  }
 }
