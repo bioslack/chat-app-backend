@@ -180,11 +180,8 @@ export const generateFileName = () => {
   md5.update(`${Date.now()}`);
   const buffer = md5.digest();
   return buffer.toString("hex");
-}
+};
 
 export const deleteFile = async (filename: string) => {
-  try {
-  }catch {
-
-  }
-}
+  await unlink(`${__dirname}/../../public/img/${filename}`);
+};

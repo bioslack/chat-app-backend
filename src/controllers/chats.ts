@@ -3,7 +3,7 @@ import multer, { FileFilterCallback } from "multer";
 import { fileURLToPath } from "url";
 import Chat, { IChat } from "../models/Chat";
 import Message from "../models/Message";
-import { catchAsync, generateFileName, HttpError } from "../utils";
+import { catchAsync, deleteFile, generateFileName, HttpError } from "../utils";
 
 export const getChats = catchAsync(
   async (_req: Request, res: Response, _next: NextFunction) => {
@@ -63,7 +63,14 @@ export const updateUser = catchAsync(
       name: req.body.name,
     };
 
-    if (req.filename) chatData.picture = req.filename;
+    if (req.filename) {
+      const old = await Chat.findOne({ _id: req.id });
+      if (old?.picture && old.picture !== "default.png") {
+        console.log(old.picture);
+        await deleteFile(old.picture);
+      }
+      chatData.picture = req.filename;
+    }
 
     const chat = await Chat.findByIdAndUpdate(
       req.id,
