@@ -1,3 +1,4 @@
+import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { connect, disconnect } from "mongoose";
 import request from "supertest";
@@ -10,7 +11,7 @@ describe("Testing signup route", () => {
   beforeEach(async () => {
     const uri = (
       await MongoMemoryServer.create({
-        binary: { version: "4.4.4", systemBinary: "/usr/bin/mongod" },
+        binary: { version: "4.4.4", systemBinary: "C://Program Files/MongoDB/Server/6.0/bin/mongodb.exe" },
       })
     ).getUri();
     await connect(uri);
