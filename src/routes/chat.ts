@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   getChats,
   getMessages,
-  updateUser,
+  updateChat,
   upload,
   removePicture,
 } from "../controllers/chats";
@@ -12,7 +12,7 @@ const chatRouter = Router();
 
 chatRouter.get("/chats", restricted, getChats);
 chatRouter.get("/chats/messages", restricted, getMessages);
-chatRouter.patch("/chat", restricted, upload.single("picture"), updateUser);
+chatRouter.patch("/chat", restricted, upload.single("picture"), updateChat);
 chatRouter.delete("/chat/picture", restricted, removePicture);
 
 export default chatRouter;

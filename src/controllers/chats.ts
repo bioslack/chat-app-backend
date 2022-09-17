@@ -57,7 +57,7 @@ export const upload = multer({
   },
 });
 
-export const updateUser = catchAsync(
+export const updateChat = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     const chatData: Partial<IChat> = {
       name: req.body.name,
