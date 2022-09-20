@@ -1,12 +1,18 @@
 import { Request, Response, NextFunction } from "express";
-import multer, { FileFilterCallback } from "multer";
-import { fileURLToPath } from "url";
+import Group from "../models/Group";
+import multer from "multer";
 import Chat, { IChat } from "../models/Chat";
 import Message from "../models/Message";
 import { catchAsync, deleteFile, generateFileName, HttpError } from "../utils";
 
 export const getChats = catchAsync(
-  async (_req: Request, res: Response, _next: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const usersId = await Message.find({
+      $or: [{ receiver: req.id }, { sender: req.id }],
+    }).distinct("receiver");
+
+    console.log(usersId);
+
     const chats = await Chat.find()
       .select("-password -confirmPassword -kind -session -__v")
       .exec();
@@ -97,5 +103,16 @@ export const removePicture = catchAsync(
     }
 
     return res.status(201).send();
+  }
+);
+
+export const createGroup = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    await Group.create({
+      ...req.body,
+      picture: req.filename,
+      members: JSON.parse(req.body.members),
+    });
+    res.status(200).send({ message: "success" });
   }
 );
