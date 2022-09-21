@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { Schema } from "mongoose";
 import Group from "../models/Group";
 import multer from "multer";
 import Chat, { IChat } from "../models/Chat";
@@ -7,15 +8,26 @@ import { catchAsync, deleteFile, generateFileName, HttpError } from "../utils";
 
 export const getChats = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    const usersId = await Message.find({
+    const senders = await Message.find({
+      $or: [{ receiver: req.id }, { sender: req.id }],
+    }).distinct("sender");
+    const receivers = await Message.find({
       $or: [{ receiver: req.id }, { sender: req.id }],
     }).distinct("receiver");
 
-    console.log(usersId);
+    console.log(senders, receivers);
 
-    const chats = await Chat.find()
+    const chats = await Chat.find({
+      $or: [
+        { _id: { $in: senders } },
+        { _id: { $in: receivers } },
+        { $and: [{ kind: "Group" }, { members: req.id }] },
+      ],
+    })
       .select("-password -confirmPassword -kind -session -__v")
       .exec();
+
+    console.log(chats);
 
     res.status(200).send({ chats });
   }
@@ -111,7 +123,8 @@ export const createGroup = catchAsync(
     await Group.create({
       ...req.body,
       picture: req.filename,
-      members: JSON.parse(req.body.members),
+      // @ts-ignore
+      members: JSON.parse([...req.body.members, req.id]),
     });
     res.status(200).send({ message: "success" });
   }

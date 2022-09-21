@@ -60,10 +60,10 @@ class UsersPool {
 
   send(message: Message) {
     const found = this.pool.find((u) => u._id === message.receiver);
-    if (!found) return;
-    found.socket.emit("receive-message", message);
     delete message._id;
     Message.create(message)
+    if (!found) return;
+    found.socket.emit("receive-message", message);
   }
 }
 
