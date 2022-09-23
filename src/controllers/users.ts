@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import Group from "../models/Group";
 import User from "../models/User";
 import { catchAsync } from "../utils";
 
@@ -24,5 +25,12 @@ export const getUser = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     const user = await User.findOne({ _id: req.id });
     res.status(200).send({ user });
+  }
+);
+
+export const getGroups = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const groups = await Group.find({ members: req.id });
+    res.status(200).send({ groups });
   }
 );
