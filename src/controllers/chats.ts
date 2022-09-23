@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, query } from "express";
 import { Types } from "mongoose";
 import Group from "../models/Group";
 import multer from "multer";
@@ -8,27 +8,36 @@ import { catchAsync, deleteFile, generateFileName, HttpError } from "../utils";
 
 export const getChats = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
-    const senders = (
-      await Message.find({
-        $or: [{ receiver: req.id }, { sender: req.id }],
-      }).distinct("sender")
-    ).map((m) => m.sender);
+    const { page = 1, limit = 10, search } = req.query;
 
-    const receivers = (
-      await Message.find({
-        $or: [{ receiver: req.id }, { sender: req.id }],
-      }).distinct("receiver")
-    ).map((m) => m.receiver);
+    const senders = await Message.find({
+      $or: [{ receiver: req.id }, { sender: req.id }],
+    }).distinct("sender");
 
-    const groups = await Group.find({ members: req.id });
+    const receivers = await Message.find({
+      $or: [{ receiver: req.id }, { sender: req.id }],
+    }).distinct("receiver");
 
-    const chats = await Chat.find({
-      $or: [{ _id: { $in: senders } }, { _id: { $in: receivers } }],
-    })
-      .select("-password -confirmPassword -kind -session -__v")
-      .exec();
+    const filter = !search
+      ? {
+          $or: [
+            { $or: [{ _id: { $in: senders } }, { _id: { $in: receivers } }] },
+            { members: req.id, kind: "Group" },
+          ],
+        }
+      : { name: { $regex: search, $options: "i" } };
 
-    res.status(200).send({ chats: [...chats, ...groups] });
+    const query = Chat.find(filter).select(
+      "-password -confirmPassword -kind -session -__v"
+    );
+
+    if (search) {
+      query.skip((+page - 1) * +limit).limit(+limit);
+    }
+
+    const chats = await query.exec();
+
+    res.status(200).send({ chats });
   }
 );
 
@@ -117,7 +126,6 @@ export const removePicture = catchAsync(
     return res.status(201).send();
   }
 );
-
 export const createGroup = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     await Group.create({
