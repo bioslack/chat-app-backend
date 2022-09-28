@@ -4,6 +4,7 @@ const allowedOrigins = [
   "http://localhost",
   "http://localhost:3000",
   "http://localhost:8888",
+  "http://192.168.3.21:3000",
 ];
 
 const credentials = (req: Request, res: Response, next: NextFunction) => {

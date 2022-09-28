@@ -62,7 +62,7 @@ class ServerSocket {
 
     const io = new Server(app, {
       cors: {
-        origin: ["http://localhost:3000"],
+        origin: ["http://localhost:3000", "http://192.168.3.21:3000"],
       },
     });
 

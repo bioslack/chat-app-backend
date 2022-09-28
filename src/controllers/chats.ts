@@ -25,15 +25,22 @@ export const getChats = catchAsync(
             { members: req.id, kind: "Group" },
           ],
         }
-      : { name: { $regex: search, $options: "i" } };
+      : {
+          $or: [
+            { name: { $regex: search, $options: "i" }, kind: "User" },
+            {
+              name: { $regex: search, $options: "i" },
+              members: req.id,
+              kind: "Group",
+            },
+          ],
+        };
 
     const query = Chat.find(filter).select(
       "-password -confirmPassword -kind -session -__v"
     );
 
-    if (search) {
-      query.skip((+page - 1) * +limit).limit(+limit);
-    }
+    query.skip((+page - 1) * +limit).limit(+limit);
 
     const chats = await query.exec();
 
