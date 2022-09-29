@@ -51,17 +51,27 @@ export const getChats = catchAsync(
 export const getMessages = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     const { _id, group_id } = req.query;
-    const messages = await Message.find({
-      $or: [
-        { receiver: req.id, sender: _id },
-        { sender: req.id, receiver: _id },
-        { receiver: group_id },
-      ],
-    });
+
+    let filter = {};
+
+    if (!group_id) {
+      filter = {
+        $or: [
+          { receiver: req.id, sender: _id },
+          { sender: req.id, receiver: _id },
+        ],
+      };
+    } else {
+      filter = { $and: [{ receiver: group_id }] };
+    }
+
+    const messages = await Message.find(filter);
 
     res.status(200).send({ messages });
   }
 );
+
+export const getChatParticipants = catchAsync(async () => {});
 
 const storage = multer.diskStorage({
   destination: (req, _file, cb) => {
