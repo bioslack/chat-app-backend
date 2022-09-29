@@ -71,7 +71,17 @@ export const getMessages = catchAsync(
   }
 );
 
-export const getChatParticipants = catchAsync(async () => {});
+export const getChatParticipants = catchAsync(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const { participants } = req.query;
+
+    const participantsMap = (
+      await Chat.find({ _id: { $in: JSON.parse(`${participants}`) } })
+    ).map((user) => ({ id: user._id, name: user.name }));
+
+    return res.status(200).send({ participants: participantsMap });
+  }
+);
 
 const storage = multer.diskStorage({
   destination: (req, _file, cb) => {
