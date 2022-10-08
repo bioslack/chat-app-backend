@@ -5,7 +5,7 @@ import { signinValidator, signupValidator } from "../middlewares/validators";
 const authRouter = Router();
 authRouter.post("/auth/signup", signupValidator(), signup);
 authRouter.post("/auth/signin", signinValidator(), signin);
-authRouter.patch("/auth/refresh", refresh);
+authRouter.get("/auth/refresh", refresh);
 authRouter.delete("/auth/logout", logout);
 
 export default authRouter;

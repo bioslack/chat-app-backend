@@ -56,6 +56,7 @@ export const logout = catchAsync(
 export const refresh = catchAsync(
   async (req: Request, res: Response, _next: NextFunction) => {
     const cookies = req.cookies;
+
     if (!cookies?.jwt) throw new HttpError(401, "Invalid token");
 
     const found = await User.findOne({ session: cookies.jwt });
@@ -69,7 +70,7 @@ export const refresh = catchAsync(
     clearRefreshToken(res);
 
     const { access, refresh } = generateToken(found);
-    setSession(found, refresh);
+    await setSession(found, refresh);
     setRefreshToken(res, refresh);
 
     res.status(200).send({ access });

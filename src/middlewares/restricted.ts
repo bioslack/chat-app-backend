@@ -5,7 +5,7 @@ import { HttpError, decodeToken } from "../utils";
 const restricted = (req: Request, _res: Response, next: NextFunction) => {
   const authorization = req.get("authorization");
 
-  if (!authorization) throw new HttpError(401, "Authentication required");
+  if (!authorization) throw new HttpError(403, "Authentication required");
   const token = authorization.split(" ")[1];
 
   if (!process.env.ACCESS_TOKEN_SECRET) throw new HttpError(500);

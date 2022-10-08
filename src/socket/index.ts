@@ -71,10 +71,6 @@ class ServerSocket {
     io.on("connection", (socket) => {
       socket.on("user-connected", (id: string, groupsId: string[]) => {
         self.add(new UserChat(id, socket), groupsId);
-        console.log(
-          "<<< Groups >>>",
-          this.groups.map((g) => g.users)
-        );
       });
 
       socket.on("send-message", (message: IMessage) => {

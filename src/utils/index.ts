@@ -127,8 +127,8 @@ export const setRefreshToken = (res: Response, refresh: string) => {
 export const clearRefreshToken = (res: Response) => {
   res.clearCookie("jwt", {
     httpOnly: true,
-    sameSite: "none",
-    secure: true,
+    // sameSite: "none",
+    // secure: true,
   });
 };
 
